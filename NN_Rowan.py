@@ -48,9 +48,7 @@ def Reweighing(protected_attribute, classifictation_class, dataset):
     counts_observed = dataset.value_counts(['X2', 'Y'], normalize=True)
     P_observed = np.flip(counts_observed.values)
     weights = P_exp_values/P_observed #weights are default-male, default-female, no default male, no default female
-    print(weights)
     dataset['weights'] = dataset.apply(lambda row: categorise(row, weights), axis=1)
-    print(dataset['weights'])
 
     return dataset
 
