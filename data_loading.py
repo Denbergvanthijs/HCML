@@ -51,9 +51,7 @@ def main():
                         default=Path("./data/"), help="the path to where we save the files")
     parser.add_argument('--split_sizes', dest="split_sizes", type=str,
                         default="70/15/15", help="the size of the train, validation and test set")
-    parser.add_argument('--single_run', dest="single_run", action='store_true',
-                        default=False, help='do a single run with a population size of start_pop')
-    parser.add_argument('--sex_split', dest="sex_split", action='store_true',
+    parser.add_argument('--keep_orig', dest="keep_orig", action='store_true',
                         default=False, help='Whether to also make a stratified split using only sex (does not save the intersectional data)')
     parser.add_argument('--seed', dest="seed", type=int,
                         default=42, help="the random seed")
@@ -71,20 +69,36 @@ def main():
     # Make new column for intersectional group combining sex and marital status
     df_data["intersection"] = (df_data["sex"].astype(str) + df_data["marriage"].astype(str)).astype(int)
 
-    # check if we also want to make the stratified split only on sex
-    if args.sex_split:
+    # get the sizes of the different sets
+    _, val_size, test_size = tuple(map(lambda x: int(x)/100, args.split_sizes.split("/")))
+
+    # check if we also want to make the stratified split where we keep the sex and marriage columns
+    if args.keep_orig:
         # do the sex split
         df_sex = deepcopy(df_data)
+        # make the stratified split
+        train_data, val_data = train_test_split(df_sex, test_size=val_size + test_size, random_state=args.seed, stratify=df_data["intersection"])
+        # Further split the train_data into train and validation sets
+        val_data, test_data = train_test_split(val_data, test_size=test_size / (val_size + test_size), random_state=args.seed, stratify=val_data["intersection"])
+
+        # drop the intersectional column
+        train_data = train_data.drop(columns=["intersection"])
+        val_data = val_data.drop(columns=["intersection"])
+        test_data = test_data.drop(columns=["intersection"])
+
+        # Save the train, validation, and test sets to CSV files
+        train_data.to_csv(Path(f"{args.save_path}/seks_train.csv"), index=False)
+        val_data.to_csv(Path(f"{args.save_path}/seks_val.csv"), index=False)
+        test_data.to_csv(Path(f"{args.save_path}/seks_test.csv"), index=False)
+
+
 
     # make the stratified split on the intersectional group
     # drop both sex and marriage columns
     df_data = df_data.drop(columns=["sex", "marriage"])
 
     # do the stratified split
-    train_size, val_size, test_size = tuple(map(lambda x: int(x)/100, args.split_sizes.split("/")))
-
     train_data, val_data = train_test_split(df_data, test_size=val_size + test_size, random_state=args.seed, stratify=df_data["intersection"])
-
     # Further split the train_data into train and validation sets
     val_data, test_data = train_test_split(val_data, test_size=test_size / (val_size + test_size), random_state=args.seed, stratify=val_data["intersection"])
 
