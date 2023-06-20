@@ -56,7 +56,13 @@ class Baseline:
         f1 = f1_score(y_true, y_pred_binary)
         confusion_mat = confusion_matrix(y_true, y_pred_binary)
 
-        return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "matrix": confusion_mat}
+        TN = confusion_mat[0, 0]
+        FP = confusion_mat[0, 1]
+        FN = confusion_mat[1, 0]
+        TP = confusion_mat[1, 1]
+
+        return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "matrix": confusion_mat,
+                "TN": TN, "FP": FP, "FN": FN, "TP": TP}
 
 
 if __name__ == "__main__":
