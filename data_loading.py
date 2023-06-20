@@ -27,15 +27,15 @@ def data_preparation(fps, drop=[]):
 
 def main():
     parser = argparse.ArgumentParser(description="process the experiment variables")
-    parser.add_argument('--data_path', dest="data_path", type=str,
+    parser.add_argument("--data_path", dest="data_path", type=str,
                         default=Path("./data/default.csv"), help="the path to the data file")
-    parser.add_argument('--save_path', dest="save_path", type=str,
+    parser.add_argument("--save_path", dest="save_path", type=str,
                         default=Path("./data/"), help="the path to where we save the files")
-    parser.add_argument('--split_sizes', dest="split_sizes", type=str,
+    parser.add_argument("--split_sizes", dest="split_sizes", type=str,
                         default="70/15/15", help="the size of the train, validation and test set")
-    parser.add_argument('--keep_orig', dest="keep_orig", action='store_true',
-                        default=False, help='Whether to also make a stratified split using only sex (does not save the intersectional data)')
-    parser.add_argument('--seed', dest="seed", type=int,
+    parser.add_argument("--keep_orig", dest="keep_orig", action="store_true",
+                        default=False, help="Whether to also make a stratified split using only sex (does not save the intersectional data)")
+    parser.add_argument("--seed", dest="seed", type=int,
                         default=42, help="the random seed")
     args = parser.parse_args()
 

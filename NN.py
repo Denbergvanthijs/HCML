@@ -5,7 +5,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 
-import data_loading
+from data_loading import data_preparation
+from evaluation import plot_history
 
 
 class Baseline:
@@ -58,29 +59,34 @@ class Baseline:
         return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "matrix": confusion_mat}
 
 
-# Example of running the code
-# Drop the intersection column from the data since we dont want it as a feature
-fps = ["./data/intersectional_train.csv", "./data/intersectional_val.csv", "./data/intersectional_test.csv"]
-X_train, X_val, X_test, y_train, y_val, y_test = data_loading.data_preparation(fps=fps, drop=["intersection"])
+if __name__ == "__main__":
+    # Example of running the code
+    # Drop the intersection column from the data since we dont want it as a feature
+    fps = ["./data/intersectional_train.csv", "./data/intersectional_val.csv", "./data/intersectional_test.csv"]
+    X_train, X_val, X_test, y_train, y_val, y_test = data_preparation(fps=fps, drop=["intersection"])
 
-# Create and train a model, it will return the predictions made by the model in binary
-baseline = Baseline(X_train, X_val, y_train, y_val)
-model = baseline.create_model(loss_func="binary_crossentropy", learning_rate=0.0001, l2_reg=0.01)
-history = baseline.train_model(model, epochs=10, batch_size=32, verbose=1)
-print(history.history)
+    # Create and train a model, it will return the predictions made by the model in binary
+    baseline = Baseline(X_train, X_val, y_train, y_val)
+    model = baseline.create_model(loss_func="binary_crossentropy", learning_rate=0.0001, l2_reg=0.01)
+    history = baseline.train_model(model, epochs=10, batch_size=32, verbose=1)
+    print(history.history)
 
-# Save model to disk
-model.save("./models/baseline.h5")
+    # Plot history
+    plot_history(history)
 
-# Predict the test set
-pred_train = model.predict(X_train)
-pred_val = model.predict(X_val)
-pred_test = model.predict(X_test)
+    # Save model to disk
+    model.save("./models/baseline.h5")
 
-# If you want to get the metrics from it
-metrics_train = Baseline.get_metrics(y_train, pred_train)
-print(metrics_train)
-metrics_val = Baseline.get_metrics(y_val, pred_val)
-print(metrics_val)
-metrics_test = Baseline.get_metrics(y_test, pred_test)
-print(metrics_test)
+    # Predict the test set
+    pred_train = model.predict(X_train)
+    pred_val = model.predict(X_val)
+    pred_test = model.predict(X_test)
+
+    # If you want to get the metrics from it
+    # Metrics are static methods so you can call them without creating an instance of the class
+    metrics_train = Baseline.get_metrics(y_train, pred_train)
+    print(metrics_train)
+    metrics_val = Baseline.get_metrics(y_val, pred_val)
+    print(metrics_val)
+    metrics_test = Baseline.get_metrics(y_test, pred_test)
+    print(metrics_test)
