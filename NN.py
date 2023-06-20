@@ -44,7 +44,8 @@ class Baseline:
 
         return self.history
 
-    def get_metrics(self, y_true, y_pred, threshold=0.5):
+    @staticmethod
+    def get_metrics(y_true, y_pred, threshold=0.5):
         y_pred_binary = (y_pred > threshold).astype(int)
 
         # Calculate different evaluation metrics
@@ -77,9 +78,9 @@ pred_val = model.predict(X_val)
 pred_test = model.predict(X_test)
 
 # If you want to get the metrics from it
-metrics_train = baseline.get_metrics(y_train, pred_train)
+metrics_train = Baseline.get_metrics(y_train, pred_train)
 print(metrics_train)
-metrics_val = baseline.get_metrics(y_val, pred_val)
+metrics_val = Baseline.get_metrics(y_val, pred_val)
 print(metrics_val)
-metrics_test = baseline.get_metrics(y_test, pred_test)
+metrics_test = Baseline.get_metrics(y_test, pred_test)
 print(metrics_test)
