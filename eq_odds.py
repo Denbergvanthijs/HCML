@@ -91,23 +91,34 @@ eq_odds = EqOddsPostprocessing(unprivileged_groups=[{"intersection": 11}, {"inte
                                privileged_groups=[{"intersection": 21}, {"intersection": 22}], seed=42)
 
 # Combine X and y
+aif_train = X_train.copy()
+aif_train["target_column"] = y_train
+
 aif_test = X_test.copy()
 aif_test["target_column"] = y_test
 
 # Convert to BinaryLabelDataset
 # Favourable is to not default (0), unfavourable is to default (1)
+aif_train = BinaryLabelDataset(favorable_label=0, unfavorable_label=1, df=aif_train,
+                               label_names=["target_column"], protected_attribute_names=["intersection"])
 aif_test = BinaryLabelDataset(favorable_label=0, unfavorable_label=1, df=aif_test,
                               label_names=["target_column"], protected_attribute_names=["intersection"])
 
-# Predict on training data
+# Predict on training data as preparation for training eq odds model
+X_train = X_train.drop("intersection", axis=1)
+y_train_pred = baseline.predict(X_train)
+aif_train_pred = aif_train.copy(deepcopy=True)  # Dataset with predicted labels
+aif_train_pred.labels = y_train_pred
+
 X_test = X_test.drop("intersection", axis=1)
 y_test_pred = baseline.predict(X_test)
 aif_test_pred = aif_test.copy(deepcopy=True)  # Dataset with predicted labels
 aif_test_pred.labels = y_test_pred
 
-# Fit post-processing object
-eq_odds.fit(aif_test, aif_test_pred)  # Fit on original vs predicted labels by baseline model
+# Fit eq odds on train
+eq_odds.fit(aif_train, aif_train_pred)  # Fit on original vs predicted labels by baseline model
 
+# Predict on test
 eq_odds_test = eq_odds.predict(aif_test_pred)
 
 # Calculate new TPR and FPR for each group
