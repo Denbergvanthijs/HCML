@@ -6,6 +6,25 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
+def data_preparation(fps, drop=[]):
+    # Load csv files
+    df_train = pd.read_csv(fps[0])
+    df_val = pd.read_csv(fps[1])
+    df_test = pd.read_csv(fps[2])
+
+    # Split into X and y
+    X_train = df_train.drop(columns=["y"] + drop)
+    y_train = df_train["y"]
+
+    X_val = df_val.drop(columns=["y"] + drop)
+    y_val = df_val["y"]
+
+    X_test = df_test.drop(columns=["y"] + drop)
+    y_test = df_test["y"]
+
+    return X_train, X_val, X_test, y_train, y_val, y_test
+
+
 def main():
     parser = argparse.ArgumentParser(description="process the experiment variables")
     parser.add_argument('--data_path', dest="data_path", type=str,
