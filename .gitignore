@@ -1,6 +1,6 @@
 # Custom
 UCI_Credit_Card.csv
-data/
+default.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

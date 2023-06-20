@@ -87,10 +87,9 @@ def main():
         test_data = test_data.drop(columns=["intersection"])
 
         # Save the train, validation, and test sets to CSV files
-        train_data.to_csv(Path(f"{args.save_path}/seks_train.csv"), index=False)
-        val_data.to_csv(Path(f"{args.save_path}/seks_val.csv"), index=False)
-        test_data.to_csv(Path(f"{args.save_path}/seks_test.csv"), index=False)
-
+        train_data.to_csv(Path(f"{args.save_path}/orig_train.csv"), index=False)
+        val_data.to_csv(Path(f"{args.save_path}/orig_val.csv"), index=False)
+        test_data.to_csv(Path(f"{args.save_path}/orig_test.csv"), index=False)
 
 
     # make the stratified split on the intersectional group
