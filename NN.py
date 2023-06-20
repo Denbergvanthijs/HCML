@@ -34,6 +34,7 @@ class Model:
         confusion_mat = confusion_matrix(y_test, y_pred_binary)
         print('Confusion Matrix:')
         print(confusion_mat)
+        return {'accuracy':accuracy, 'precision':precision, 'recall':recall, 'f1': f1,'matrix':confusion_mat}
 
     def create_model(self, loss_func='binary_crossentropy'):
         X_train = self.X_train
@@ -63,12 +64,12 @@ class Model:
 
 # Exaplme of running the code
 
-# X_train, X_test, y_train, y_test = data_loading.data_preparation()
+X_train, X_test, y_train, y_test = data_loading.data_preparation()
 
 # create and train a model, it will return the predictions made by the model in binary
-# model = Model(X_train, X_test, y_train, y_test)
-# pred = model.create_model()
+model = Model(X_train, X_test, y_train, y_test)
+pred = model.create_model()
 
 # if you want to get the metrics from it
-# model.get_metrics(pred)
-
+metrics = model.get_metrics(pred)
+print(metrics)

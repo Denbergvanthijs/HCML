@@ -10,10 +10,10 @@ from sklearn.preprocessing import StandardScaler
 def create_data_split():
     # Split the dataset into train and test sets
     data = pd.read_excel('data_taiwan/default of credit card clients.xls', skiprows=[1])
-    train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+    train_data, test_data = train_test_split(data, test_size=0.2, random_state=42, stratify=data['X2'])
 
     # Further split the train_data into train and validation sets
-    test_data, val_data = train_test_split(test_data, test_size=0.5, random_state=42)
+    test_data, val_data = train_test_split(test_data, test_size=0.5, random_state=42, stratify=test_data['X2'])
 
     # Save the train, test, and validation sets to CSV files
     train_data.to_csv('data_taiwan/train.csv', index=False)
