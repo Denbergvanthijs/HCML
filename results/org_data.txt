@@ -1,0 +1,3 @@
+#### Original training dataset
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.035370
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.021474
