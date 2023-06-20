@@ -83,7 +83,7 @@ plt.ylabel("TPR")
 plt.title(f"ROC curve on test data for baseline model")
 plt.legend(title="Intersectional group")
 plt.savefig("./images/ROC_baseline.eps")
-# plt.show()
+plt.show()
 
 # Apply equalised odds via AIF360
 # Create post-processing object
@@ -150,3 +150,31 @@ print(f"F1: {F1_new.round(2)}")
 # Calculate percentual change in F1 scores, element-wise
 F1_change = (F1_new - F1) / F1
 print(f"Change in F1 scores: {F1_change.round(2)}")
+
+# New ROC curve
+fig, ax = plt.subplots(figsize=(6, 6))
+# Calculate and plot ROC curves for each group
+tpr_scores_new = []
+fpr_scores_new = []
+for c, group in enumerate((11, 12, 21, 22)):
+    idx = eq_odds_test.protected_attributes[:, 0] == group
+    y_pred = eq_odds_test.labels[idx]
+
+    fpr, tpr, thresholds = sklearn.metrics.roc_curve(y_subsets[c], y_pred)
+    tpr_scores_new.append(tpr)
+    fpr_scores_new.append(fpr)
+
+    # Plot ROC curve
+    ax.plot(fpr, tpr, label=labels_intersection[group], color=UU_PAL[c])
+
+# Add overall ROC curve
+fpr, tpr, thresholds = sklearn.metrics.roc_curve(y_test, eq_odds_test.labels)
+ax.plot(fpr, tpr, label="Overall", color="black", linestyle="--")
+
+ax.set_aspect("equal", "box")
+plt.xlabel("FPR")
+plt.ylabel("TPR")
+plt.title(f"ROC curve on test data for baseline model with equalised odds")
+plt.legend(title="Intersectional group")
+plt.savefig("./images/ROC_eq_odds.eps")
+plt.show()
