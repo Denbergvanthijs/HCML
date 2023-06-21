@@ -66,7 +66,7 @@ def Reweighing_data(protected_attribute, classification_class, dataset):
 
     return dataset   
 
-
+# create binary dataset with priv and unpriv groups
 unpriv_group = [{"intersection": 11}, {"intersection": 12}]
 priv_group = [{"intersection": 21}, {"intersection": 22}]
 
@@ -83,10 +83,11 @@ X_test_new = BinaryLabelDataset(favorable_label=0, unfavorable_label=1, df=X_tes
 
 
 
-
+# apply reweighing
 dataset_train1 = Reweighing(unprivileged_groups=unpriv_group,privileged_groups=priv_group).fit_transform(X_train_new)
 weights = dataset_train1.instance_weights
 
+# create a new model with the weighted loss function
 reweighed = Baseline(X_train, X_val, y_train, y_val)
 model = reweighed.create_model(loss_func=lambda y_true, y_pred: weighted_loss(y_true, y_pred, weights), learning_rate=0.0001, l2_reg=0.01)
 
@@ -100,6 +101,7 @@ pred_train = model.predict(X_train)
 pred_val = model.predict(X_val)
 pred_test = model.predict(X_test)
 
+# print metrics
 metrics_train = Baseline.get_metrics(y_train, pred_train)
 print('accuracy:', metrics_train['accuracy'], 'f1_score: ', metrics_train['f1'],   ' matrix: ', metrics_train['matrix'])
 metrics_val = Baseline.get_metrics(y_val, pred_val)
@@ -107,6 +109,7 @@ print('accuracy:', metrics_val['accuracy'], 'f1_score: ', metrics_val['f1'],  ' 
 metrics_test = Baseline.get_metrics(y_test, pred_test)
 print('accuracy:', metrics_test['accuracy'],'f1_score: ', metrics_test['f1'],  ' matrix: ', metrics_test['matrix'])
 
+# statistical parity before and after
 metric_orig_train = BinaryLabelDatasetMetric(X_train_new,
                                              unprivileged_groups=unpriv_group,
                                              privileged_groups=priv_group)
@@ -119,6 +122,7 @@ metric_orig_test = BinaryLabelDatasetMetric(X_test_new,
 print("Test set: Difference in mean outcomes between unprivileged and privileged groups = %f" %
       metric_orig_test.mean_difference())
 
+# change labels to predictions
 X_train_new.labels = pred_train
 X_test_new.labels = pred_test
 
