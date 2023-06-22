@@ -22,9 +22,10 @@ X_train, X_val, X_test, y_train, y_val, y_test = data_preparation(fps=fps)
 # FPR = FP / (FP + TN) = p[D = 1 | Y = 0 | A = a] for all four intersectional groups a
 
 # Calculate current TPR and FPR for each group
-TPR = []
-FPR = []
 F1 = []
+SP = []  # Statistical parity
+EO = []  # Equal opportunity
+FPR = []  # False positive rate
 y_subsets = []
 y_scores = []
 labels_intersection = {11: "Married Men", 12: "Single Men", 21: "Married Women", 22: "Single Women"}
@@ -45,20 +46,26 @@ for group in (11, 12, 21, 22):
     # Calculate metrics for subset
     metrics = Baseline.get_metrics(y_subset, y_pred, threshold=0.5)
 
-    TPR.append(metrics["TP"] / (metrics["TP"] + metrics["FN"]))
-    FPR.append(metrics["FP"] / (metrics["FP"] + metrics["TN"]))
+    # Fidelity metrics
     F1.append(metrics["f1"])
 
-# To numpy array
-TPR = np.array(TPR)
-FPR = np.array(FPR)
-F1 = np.array(F1)
+    # Fairness metrics
+    SP.append(metrics["SP"])
+    EO.append(metrics["EO"])  # EO is equal to TPR/Recall
+    FPR.append(metrics["FPR"])
 
-print("Old TPR and FPR for each group:")
+# To numpy array
+F1 = np.array(F1)
+SP = np.array(SP)
+EO = np.array(EO)
+FPR = np.array(FPR)
+
+print("Baseline model metrics for each group:")
 print(list(labels_intersection.values()))
-print(f"TPR: {TPR.round(2)}")
-print(f"FPR: {FPR.round(2)}")
 print(f"F1: {F1.round(2)}")
+print(f"SP: {SP.round(2)}")
+print(f"EO/TPR: {EO.round(2)}")
+print(f"FPR: {FPR.round(2)}")
 
 fig, ax = plt.subplots(figsize=(6, 6))
 # Calculate and plot ROC curves for each group
@@ -122,9 +129,10 @@ eq_odds.fit(aif_train, aif_train_pred)  # Fit on original vs predicted labels by
 eq_odds_test = eq_odds.predict(aif_test_pred)
 
 # Calculate new TPR and FPR for each group
-TPR_new = []
-FPR_new = []
 F1_new = []
+SP_new = []  # Statistical parity
+EO_new = []  # Equal opportunity
+FPR_new = []
 for c, group in enumerate((11, 12, 21, 22)):
     idx = eq_odds_test.protected_attributes[:, 0] == group
     y_pred = eq_odds_test.labels[idx]
@@ -132,24 +140,34 @@ for c, group in enumerate((11, 12, 21, 22)):
     # Calculate metrics for subset
     metrics = Baseline.get_metrics(y_subsets[c], y_pred, threshold=0.5)
 
-    TPR_new.append(metrics["TP"] / (metrics["TP"] + metrics["FN"]))
-    FPR_new.append(metrics["FP"] / (metrics["FP"] + metrics["TN"]))
+    # Fidelity metrics
     F1_new.append(metrics["f1"])
 
+    # Fairness metrics
+    SP_new.append(metrics["SP"])
+    EO_new.append(metrics["EO"])  # EO is equal to TPR/Recall
+    FPR_new.append(metrics["FPR"])
+
 # To numpy array
-TPR_new = np.array(TPR_new)
-FPR_new = np.array(FPR_new)
 F1_new = np.array(F1_new)
+SP_new = np.array(SP_new)
+EO_new = np.array(EO_new)
+FPR_new = np.array(FPR_new)
 
-print("New TPR and FPR for each group:")
+print("After Equal Odds mitigation metrics for each group:")
 print(list(labels_intersection.values()))
-print(f"TPR: {TPR_new.round(2)}")
-print(f"FPR: {FPR_new.round(2)}")
-print(f"F1: {F1_new.round(2)}")
+print(f"F1: {F1.round(2)}")
+print(f"SP: {SP.round(2)}")
+print(f"EO/TPR: {EO.round(2)}")
+print(f"FPR: {FPR.round(2)}")
 
-# Calculate percentual change in F1 scores, element-wise
-F1_change = (F1_new - F1) / F1
-print(f"Change in F1 scores: {F1_change.round(2)}")
+# Calculate percentual change of metrics, element-wise
+weights = [y_subsets[c].size / y_test.size for c in range(4)]
+for new, old, name in zip((F1_new, SP_new, EO_new, FPR_new), (F1, SP, EO, FPR), ("F1", "SP", "EO", "FPR")):
+    change = (new - old) / old
+    macro = np.mean(change)
+    micro = np.average(change, weights=weights)
+    print(f"Change in {name} scores: {change.round(2)}; Macro-average: {macro.round(2)}; Micro-average: {micro.round(2)}")
 
 # New ROC curve
 fig, ax = plt.subplots(figsize=(6, 6))
