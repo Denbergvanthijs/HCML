@@ -67,8 +67,12 @@ class Baseline:
         # Equal Opportunity, same as True Positive Rate (TPR), or Recall
         EO = TP / (TP + FN)
 
+        TNR = TN / (TN + FP)  # True Negative Rate
+        FPR = FP / (FP + TN)  # False Positive Rate
+        FNR = FN / (FN + TP)  # False Negative Rate
+
         return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "matrix": confusion_mat,
-                "TN": TN, "FP": FP, "FN": FN, "TP": TP, "SP": SP, "EO": EO}
+                "TN": TN, "FP": FP, "FN": FN, "TP": TP, "SP": SP, "EO": EO, "TNR": TNR, "FPR": FPR, "FNR": FNR}
 
 
 if __name__ == "__main__":
