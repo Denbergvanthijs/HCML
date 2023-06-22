@@ -61,8 +61,14 @@ class Baseline:
         FN = confusion_mat[1, 0]
         TP = confusion_mat[1, 1]
 
+        # Statistical Parity
+        SP = (TP + FP) / (TP + FP + TN + FN)  # P / N
+
+        # Equal Opportunity, same as True Positive Rate (TPR), or Recall
+        EO = TP / (TP + FN)
+
         return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "matrix": confusion_mat,
-                "TN": TN, "FP": FP, "FN": FN, "TP": TP}
+                "TN": TN, "FP": FP, "FN": FN, "TP": TP, "SP": SP, "EO": EO}
 
 
 if __name__ == "__main__":
