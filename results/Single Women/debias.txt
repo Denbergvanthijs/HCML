@@ -1,0 +1,23 @@
+#### Plain model - without debiasing - dataset metrics
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.038403
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.024385
+
+#### Model - with debiasing - dataset metrics
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.019006
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.006894
+
+#### Plain model - without debiasing - classification metrics
+Test set: Classification accuracy = 0.814581
+Test set: Balanced classification accuracy = 0.645766
+Test set: Disparate impact = 0.972867
+Test set: Equal opportunity difference = -0.010093
+Test set: Average odds difference = -0.017872
+Test set: Theil_index = 0.084183
+
+#### Model - with debiasing - classification metrics
+Test set: Classification accuracy = 0.814356
+Test set: Balanced classification accuracy = 0.639695
+Test set: Disparate impact = 0.992286
+Test set: Equal opportunity difference = 0.001563
+Test set: Average odds difference = 0.007042
+Test set: Theil_index = 0.081237

@@ -1,0 +1,7 @@
+#### Original training dataset
+Train set: Difference in mean outcomes between unprivileged and privileged groups = 0.052710
+Test set: Difference in mean outcomes between unprivileged and privileged groups = 0.032463
+
+#### Scaled dataset - Verify that the scaling does not affect the group label statistics
+Train set: Difference in mean outcomes between unprivileged and privileged groups = 0.052710
+Test set: Difference in mean outcomes between unprivileged and privileged groups = 0.032463

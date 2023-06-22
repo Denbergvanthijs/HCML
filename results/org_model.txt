@@ -1,25 +1,25 @@
 #### Plain model - without debiasing - classification metrics
-Test set: Classification accuracy = 0.812781
-Test set: Balanced classification accuracy = 0.638687
-Test set: Disparate impact = 0.980161
-Test set: Equal opportunity difference = -0.009514
-Test set: Average odds difference = -0.014639
-Test set: Theil_index = 0.082921
+Test set: Classification accuracy = 0.813906
+Test set: Balanced classification accuracy = 0.634222
+Test set: Disparate impact = 0.987508
+Test set: Equal opportunity difference = -0.003948
+Test set: Average odds difference = -0.007371
+Test set: Theil_index = 0.078927
 
 #### Plain model - without debiasing - dataset metrics
-Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.037182
-Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.017746
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.029959
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.011235
 
 #### Plain model - without debiasing - classification metrics
-Test set: Classification accuracy = 0.812781
-Test set: Balanced classification accuracy = 0.638687
-Test set: Disparate impact = 0.980161
-Test set: Equal opportunity difference = -0.009514
-Test set: Average odds difference = -0.014639
-Test set: Theil_index = 0.082921
+Test set: Classification accuracy = 0.813906
+Test set: Balanced classification accuracy = 0.634222
+Test set: Disparate impact = 0.987508
+Test set: Equal opportunity difference = -0.003948
+Test set: Average odds difference = -0.007371
+Test set: Theil_index = 0.078927
 
 #### Plain model - without debiasing - own metrics
-F1: 0.89
-SP: 0.89
-EO/TPR: 0.95
-FPR: 0.67
+F1: 0.43
+SP: 0.11
+EO/TPR: 0.31
+FPR: 0.05
