@@ -47,14 +47,19 @@ class Baseline:
 
     @staticmethod
     def get_metrics(y_true, y_pred, threshold=0.5):
-        y_pred_binary = (y_pred > threshold).astype(int)
+        """
+        Threshold is used to convert probabilities to binary predictions.
+        If threshold is None, then y_pred is assumed to be binary predictions already.
+        """
+        if threshold is not None:  # Check if threshold is passed as arg
+            y_pred = (y_pred > threshold).astype(int)
 
         # Calculate different evaluation metrics
-        accuracy = accuracy_score(y_true, y_pred_binary)
-        precision = precision_score(y_true, y_pred_binary)
-        recall = recall_score(y_true, y_pred_binary)
-        f1 = f1_score(y_true, y_pred_binary)
-        confusion_mat = confusion_matrix(y_true, y_pred_binary)
+        accuracy = accuracy_score(y_true, y_pred)
+        precision = precision_score(y_true, y_pred)
+        recall = recall_score(y_true, y_pred)
+        f1 = f1_score(y_true, y_pred)
+        confusion_mat = confusion_matrix(y_true, y_pred)
 
         TN = confusion_mat[0, 0]
         FP = confusion_mat[0, 1]
