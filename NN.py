@@ -1,5 +1,4 @@
-from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
-                             precision_score, recall_score)
+from sklearn.metrics import confusion_matrix
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
@@ -55,16 +54,15 @@ class Baseline:
             y_pred = (y_pred > threshold).astype(int)
 
         # Calculate different evaluation metrics
-        accuracy = accuracy_score(y_true, y_pred)
-        precision = precision_score(y_true, y_pred)
-        recall = recall_score(y_true, y_pred)
-        f1 = f1_score(y_true, y_pred)
         confusion_mat = confusion_matrix(y_true, y_pred)
 
-        TN = confusion_mat[0, 0]
-        FP = confusion_mat[0, 1]
-        FN = confusion_mat[1, 0]
-        TP = confusion_mat[1, 1]
+        # Since 0 is the prefered class (not defaulting), we flip the confusion matrix
+        # Positive class: 0, did not default
+        # Negative class: 1, defaulted
+        TP = confusion_mat[0, 0]
+        FN = confusion_mat[0, 1]
+        FP = confusion_mat[1, 0]
+        TN = confusion_mat[1, 1]
 
         # Statistical Parity
         SP = (TP + FP) / (TP + FP + TN + FN)  # P / N
@@ -75,6 +73,11 @@ class Baseline:
         TNR = TN / (TN + FP)  # True Negative Rate
         FPR = FP / (FP + TN)  # False Positive Rate
         FNR = FN / (FN + TP)  # False Negative Rate
+
+        accuracy = TP / (TP + TN + FP + FN)
+        precision = TP / (TP + FP)
+        recall = TP / (TP + FN)
+        f1 = 2 * (precision * recall) / (precision + recall)
 
         return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "matrix": confusion_mat,
                 "TN": TN, "FP": FP, "FN": FN, "TP": TP, "SP": SP, "EO": EO, "TNR": TNR, "FPR": FPR, "FNR": FNR}
