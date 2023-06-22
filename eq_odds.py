@@ -47,7 +47,7 @@ for c, group in enumerate((11, 12, 21, 22)):
     metrics_baseline["FPR"].append(metrics["FPR"])  # False positive rate
 
     # Calculate ROC curve
-    FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_true, y_pred)
+    FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_true, y_pred, pos_label=0)  # pos_label=0 because favourable is 0, e.g. no default
     ax.plot(FPR, TPR, label=labels_intersection[group], color=UU_PAL[c])  # Plot ROC curve
 
 print("Baseline model metrics for each group:")
@@ -58,7 +58,7 @@ for key in metrics_baseline.keys():
 
 # Add overall ROC curve
 y_pred = baseline.predict(X_test.drop("intersection", axis=1))  # Predict on all test data
-FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_test, y_pred)
+FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_test, y_pred, pos_label=0)  # pos_label=0 because favourable is 0, e.g. no default
 ax.plot(FPR, TPR, label="Overall", color="black", linestyle="--")
 
 ax.set_aspect("equal", "box")
@@ -120,7 +120,8 @@ for c, group in enumerate((11, 12, 21, 22)):
     metrics_new["FPR"].append(metrics["FPR"])  # False positive rate
 
     # Calculate ROC curve
-    FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_trues[c], y_pred)
+    # pos_label=0 because favourable is 0, e.g. no default
+    FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_trues[c], y_pred, pos_label=0)
     ax.plot(FPR, TPR, label=labels_intersection[group], color=UU_PAL[c])  # Plot ROC curve
 
 print("After Equalised Odds mitigation metrics for each group:")
@@ -138,7 +139,8 @@ for metric, old_value in metrics_baseline.items():
     print(f"Change in {metric} scores: {change.round(2)}; Macro-average: {macro.round(2)}; Micro-average: {micro.round(2)}")
 
 # Add overall ROC curve
-FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_test, eq_odds_test.labels)
+# pos_label=0 because favourable is 0, e.g. no default
+FPR, TPR, thresholds = sklearn.metrics.roc_curve(y_test, eq_odds_test.labels, pos_label=0)
 ax.plot(FPR, TPR, label="Overall", color="black", linestyle="--")
 
 ax.set_aspect("equal", "box")
