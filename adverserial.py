@@ -5,6 +5,7 @@ from aif360.metrics import ClassificationMetric
 from aif360.metrics import BinaryLabelDatasetMetric
 from aif360.algorithms.inprocessing.adversarial_debiasing import AdversarialDebiasing
 from sklearn.preprocessing import MaxAbsScaler
+from NN import Baseline
 import sys
 
 # error debug
@@ -15,6 +16,12 @@ warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 tf.disable_eager_execution()
+
+
+## PARAMS
+total_epoch = 10
+
+##
 
 # https://github.com/Trusted-AI/AIF360/blob/master/aif360/algorithms/inprocessing/adversarial_debiasing.py
 # Load data from disk
@@ -62,6 +69,7 @@ metric_orig_test = BinaryLabelDatasetMetric(dataset_orig_test,
 print("Test set: Difference in mean outcomes between unprivileged and privileged groups = %f" %
       metric_orig_test.mean_difference())
 
+
 # stop write to file
 sys.stdout = orig_stdout
 f.close()
@@ -96,11 +104,12 @@ plain_model = AdversarialDebiasing(privileged_groups=privileged_groups,
                                    scope_name='plain_classifier',
                                    debias=False,
                                    sess=sess,
-                                   num_epochs=10,
+                                   num_epochs=total_epoch,
                                    batch_size=32,
                                    classifier_num_hidden_units=50)
 
 plain_model.fit(dataset_orig_train)
+
 
 # Apply the plain model to test data
 dataset_nodebiasing_train = plain_model.predict(dataset_orig_train)
@@ -170,6 +179,15 @@ print("Test set: Average odds difference = %f" %
 print("Test set: Theil_index = %f" %
       classified_metric_nodebiasing_test.theil_index())
 
+
+print(("\n#### Plain model - without debiasing - own metrics"))
+metrics = Baseline.get_metrics(dataset_orig_test.scores, dataset_nodebiasing_test.scores, threshold=0.5)
+print(f"F1: {metrics['f1'].round(2)}")
+print(f"SP: {metrics['SP'].round(2)}")
+print(f"EO/TPR: {metrics['EO'].round(2)}")
+print(f"FPR: {metrics['FPR'].round(2)}")
+
+
 # stop write to file
 sys.stdout = orig_stdout
 f.close()
@@ -186,7 +204,7 @@ debiased_model = AdversarialDebiasing(privileged_groups=privileged_groups,
                                       scope_name='debiased_classifier',
                                       debias=True,
                                       sess=sess,
-                                      num_epochs=10,
+                                      num_epochs=total_epoch,
                                       batch_size=32,
                                       classifier_num_hidden_units=50)
 debiased_model.fit(dataset_orig_train)
@@ -194,6 +212,7 @@ debiased_model.fit(dataset_orig_train)
 # Apply the plain model to test data
 dataset_debiasing_train = debiased_model.predict(dataset_orig_train)
 dataset_debiasing_test = debiased_model.predict(dataset_orig_test)
+
 
 orig_stdout = sys.stdout
 f = open('results/debias.txt', 'w+')
@@ -261,6 +280,20 @@ print("Test set: Average odds difference = %f" %
       classified_metric_debiasing_test.average_odds_difference())
 print("Test set: Theil_index = %f" %
       classified_metric_debiasing_test.theil_index())
+
+print(("\n#### Plain model - without debiasing - own metrics"))
+metrics = Baseline.get_metrics(dataset_orig_test.scores, dataset_nodebiasing_test.scores, threshold=0.5)
+print(f"F1: {metrics['f1'].round(2)}")
+print(f"SP: {metrics['SP'].round(2)}")
+print(f"EO/TPR: {metrics['EO'].round(2)}")
+print(f"FPR: {metrics['FPR'].round(2)}")
+
+print(("\n#### Model - with debiasing - own metrics"))
+metrics = Baseline.get_metrics(dataset_orig_test.scores, dataset_debiasing_test.scores, threshold=0.5)
+print(f"F1: {metrics['f1'].round(2)}")
+print(f"SP: {metrics['SP'].round(2)}")
+print(f"EO/TPR: {metrics['EO'].round(2)}")
+print(f"FPR: {metrics['FPR'].round(2)}")
 # stop write to file
 sys.stdout = orig_stdout
 f.close()
