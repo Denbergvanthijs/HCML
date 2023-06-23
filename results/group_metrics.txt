@@ -1,13 +1,13 @@
 Baseline model metrics for each group:
 ['Married Men', 'Single Men', 'Married Women', 'Single Women']
-f1: [0.41 0.4  0.44 0.45]
-SP: [0.1  0.1  0.11 0.12]
-EO: [0.3  0.29 0.34 0.35]
-FPR: [0.04 0.04 0.05 0.05]
+f1: [0.89 0.89 0.89 0.89]
+SP: [0.89 0.89 0.88 0.89]
+EO: [0.95 0.95 0.95 0.95]
+FPR: [0.68 0.66 0.65 0.66]
 
-Baseline model metrics for each group:
+Adverserial model metrics for each group:
 ['Married Men', 'Single Men', 'Married Women', 'Single Women']
-f1: [0.46 0.43 0.41 0.44]
-SP: [0.12 0.11 0.1  0.11]
-EO: [0.36 0.33 0.3  0.33]
-FPR: [0.06 0.05 0.04 0.05]
+f1: [0.89 0.89 0.89 0.89]
+SP: [0.89 0.89 0.9  0.87]
+EO: [0.95 0.95 0.96 0.94]
+FPR: [0.67 0.67 0.71 0.63]

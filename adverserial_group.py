@@ -191,7 +191,7 @@ for curr_group, _ in labels_intersection.items():
     f.close()
 
     metrics = Baseline.get_metrics(
-        dataset_orig_test.scores, dataset_nodebiasing_test.scores, threshold=0.5)
+        dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)
     metrics_base["f1"].append(metrics["f1"])  # Fidelity metric
     metrics_base["SP"].append(metrics["SP"])  # Statistical parity
     # Equalised opportunity, same as TPR
@@ -287,7 +287,7 @@ for curr_group, _ in labels_intersection.items():
     f.close()
 
     metrics = Baseline.get_metrics(
-        dataset_orig_test.scores, dataset_debiasing_test.scores, threshold=0.5)
+        dataset_orig_test.labels, dataset_debiasing_test.labels, threshold=None)
     metrics_adv["f1"].append(metrics["f1"])  # Fidelity metric
     metrics_adv["SP"].append(metrics["SP"])  # Statistical parity
     # Equalised opportunity, same as TPR
@@ -305,7 +305,7 @@ for key in metrics_base.keys():
     metrics_base[key] = np.array(metrics_base[key])
     print(f"{key}: {metrics_base[key].round(2)}")
 
-print("\nBaseline model metrics for each group:")
+print("\Adverserial model metrics for each group:")
 print(list(labels_intersection.values()))
 for key in metrics_adv.keys():
     metrics_adv[key] = np.array(metrics_adv[key])

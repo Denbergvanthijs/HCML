@@ -1,23 +1,23 @@
 #### Plain model - without debiasing - dataset metrics
-Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.006064
-Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.003467
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.000534
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.001272
 
 #### Model - with debiasing - dataset metrics
-Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.035209
-Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.030682
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.018706
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.015568
 
 #### Plain model - without debiasing - classification metrics
-Test set: Classification accuracy = 0.814581
-Test set: Balanced classification accuracy = 0.642062
-Test set: Disparate impact = 0.996101
-Test set: Equal opportunity difference = -0.005962
-Test set: Average odds difference = -0.010162
-Test set: Theil_index = 0.082192
+Test set: Classification accuracy = 0.815932
+Test set: Balanced classification accuracy = 0.649223
+Test set: Disparate impact = 0.998557
+Test set: Equal opportunity difference = -0.004684
+Test set: Average odds difference = -0.007338
+Test set: Theil_index = 0.084128
 
 #### Model - with debiasing - classification metrics
-Test set: Classification accuracy = 0.813006
-Test set: Balanced classification accuracy = 0.629201
-Test set: Disparate impact = 0.966698
-Test set: Equal opportunity difference = -0.017272
-Test set: Average odds difference = -0.055927
-Test set: Theil_index = 0.077491
+Test set: Classification accuracy = 0.810756
+Test set: Balanced classification accuracy = 0.624798
+Test set: Disparate impact = 0.982928
+Test set: Equal opportunity difference = -0.012384
+Test set: Average odds difference = -0.028019
+Test set: Theil_index = 0.078285
