@@ -1,3 +1,4 @@
 tensorflow
 sklearn
 aif360
+numba

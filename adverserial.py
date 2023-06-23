@@ -1,24 +1,25 @@
-import tensorflow.compat.v1 as tf
-from data_loading import data_preparation
-from aif360.datasets import BinaryLabelDataset
-from aif360.metrics import ClassificationMetric
-from aif360.metrics import BinaryLabelDatasetMetric
-from aif360.algorithms.inprocessing.adversarial_debiasing import AdversarialDebiasing
-from sklearn.preprocessing import MaxAbsScaler
-from NN import Baseline
 import sys
-
-# error debug
-from numba.core.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
 import warnings
+
+import tensorflow.compat.v1 as tf
+from aif360.algorithms.inprocessing.adversarial_debiasing import \
+    AdversarialDebiasing
+from aif360.datasets import BinaryLabelDataset
+from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
+# error debug
+from numba.core.errors import (NumbaDeprecationWarning,
+                               NumbaPendingDeprecationWarning)
+from sklearn.preprocessing import MaxAbsScaler
+
+from data_loading import data_preparation
+from NN import Baseline
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 tf.disable_eager_execution()
 
-
-## PARAMS
+# PARAMS
 total_epoch = 10
 
 ##
@@ -28,7 +29,6 @@ total_epoch = 10
 fps = ["./data/intersectional_train.csv", "./data/intersectional_val.csv", "./data/intersectional_test.csv"]
 X_train, X_val, X_test, y_train, y_val, y_test = data_preparation(fps=fps)
 
-# Calculate current TPR and FPR for each group
 labels_intersection = {11: "Married Men", 12: "Single Men", 21: "Married Women", 22: "Single Women"}
 in2bo = {(11, 12): 0, (21, 22): 1}
 
@@ -181,7 +181,7 @@ print("Test set: Theil_index = %f" %
 
 
 print(("\n#### Plain model - without debiasing - own metrics"))
-metrics = Baseline.get_metrics(dataset_orig_test.scores, dataset_nodebiasing_test.scores, threshold=0.5)
+metrics = Baseline.get_metrics(dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)
 print(f"F1: {metrics['f1'].round(2)}")
 print(f"SP: {metrics['SP'].round(2)}")
 print(f"EO/TPR: {metrics['EO'].round(2)}")
@@ -282,14 +282,14 @@ print("Test set: Theil_index = %f" %
       classified_metric_debiasing_test.theil_index())
 
 print(("\n#### Plain model - without debiasing - own metrics"))
-metrics = Baseline.get_metrics(dataset_orig_test.scores, dataset_nodebiasing_test.scores, threshold=0.5)
+metrics = Baseline.get_metrics(dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)  # None since binary labels
 print(f"F1: {metrics['f1'].round(2)}")
 print(f"SP: {metrics['SP'].round(2)}")
 print(f"EO/TPR: {metrics['EO'].round(2)}")
 print(f"FPR: {metrics['FPR'].round(2)}")
 
 print(("\n#### Model - with debiasing - own metrics"))
-metrics = Baseline.get_metrics(dataset_orig_test.scores, dataset_debiasing_test.scores, threshold=0.5)
+metrics = Baseline.get_metrics(dataset_orig_test.labels, dataset_debiasing_test.labels, threshold=None)  # None since binary labels
 print(f"F1: {metrics['f1'].round(2)}")
 print(f"SP: {metrics['SP'].round(2)}")
 print(f"EO/TPR: {metrics['EO'].round(2)}")
