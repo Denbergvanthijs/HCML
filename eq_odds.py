@@ -54,7 +54,8 @@ print("Baseline model metrics for each group:")
 print(list(labels_intersection.values()))
 for key in metrics_baseline.keys():
     metrics_baseline[key] = np.array(metrics_baseline[key])
-    print(f"{key}: {metrics_baseline[key].round(2)}; STD: {metrics_baseline[key].std().round(4)}")
+    print(
+        f"{key}: {metrics_baseline[key].round(2)}; Mean: {metrics_baseline[key].mean().round(2)}; STD: {metrics_baseline[key].std().round(4)}")
 
 # Add overall ROC curve
 y_pred = baseline.predict(X_test.drop("intersection", axis=1))  # Predict on all test data
@@ -128,7 +129,7 @@ print("After Equalised Odds mitigation metrics for each group:")
 print(list(labels_intersection.values()))
 for key in metrics_new.keys():
     metrics_new[key] = np.array(metrics_new[key])
-    print(f"{key}: {metrics_new[key].round(2)}; STD: {metrics_new[key].std().round(4)}")
+    print(f"{key}: {metrics_new[key].round(2)}; Mean: {metrics_new[key].mean().round(2)}; STD: {metrics_new[key].std().round(4)}")
 
 weights = [y_trues[c].size / y_test.size for c in range(4)]  # Weights for micro-average
 # Calculate percentual change of metrics, element-wise
