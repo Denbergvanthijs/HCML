@@ -10,9 +10,10 @@ from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
 from numba.core.errors import (NumbaDeprecationWarning,
                                NumbaPendingDeprecationWarning)
 from sklearn.preprocessing import MaxAbsScaler
-
+import numpy as np
 from data_loading import data_preparation
 from NN import Baseline
+from copy import deepcopy
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
@@ -26,15 +27,18 @@ total_epoch = 10
 
 # https://github.com/Trusted-AI/AIF360/blob/master/aif360/algorithms/inprocessing/adversarial_debiasing.py
 # Load data from disk
-fps = ["./data/intersectional_train.csv", "./data/intersectional_val.csv", "./data/intersectional_test.csv"]
+fps = ["./data/intersectional_train.csv",
+       "./data/intersectional_val.csv", "./data/intersectional_test.csv"]
 X_train, X_val, X_test, y_train, y_val, y_test = data_preparation(fps=fps)
+aif_test_deepcopy = deepcopy(X_test)
 
-labels_intersection = {11: "Married Men", 12: "Single Men", 21: "Married Women", 22: "Single Women"}
+
+labels_intersection = {11: "Married Men", 12: "Single Men",
+                       21: "Married Women", 22: "Single Women"}
 in2bo = {(11, 12): 0, (21, 22): 1}
 
 X_train["intersection"].replace(in2bo, inplace=True)
 X_test["intersection"].replace(in2bo, inplace=True)
-
 unprivileged_groups = [{"intersection": 0}]
 privileged_groups = [{"intersection": 1}]
 
@@ -75,8 +79,10 @@ sys.stdout = orig_stdout
 f.close()
 
 min_max_scaler = MaxAbsScaler()
-dataset_orig_train.features = min_max_scaler.fit_transform(dataset_orig_train.features)
-dataset_orig_test.features = min_max_scaler.transform(dataset_orig_test.features)
+dataset_orig_train.features = min_max_scaler.fit_transform(
+    dataset_orig_train.features)
+dataset_orig_test.features = min_max_scaler.transform(
+    dataset_orig_test.features)
 metric_scaled_train = BinaryLabelDatasetMetric(dataset_orig_train,
                                                unprivileged_groups=unprivileged_groups,
                                                privileged_groups=privileged_groups)
@@ -181,7 +187,8 @@ print("Test set: Theil_index = %f" %
 
 
 print(("\n#### Plain model - without debiasing - own metrics"))
-metrics = Baseline.get_metrics(dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)
+metrics = Baseline.get_metrics(
+    dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)
 print(f"F1: {metrics['f1'].round(2)}")
 print(f"SP: {metrics['SP'].round(2)}")
 print(f"EO/TPR: {metrics['EO'].round(2)}")
@@ -282,18 +289,64 @@ print("Test set: Theil_index = %f" %
       classified_metric_debiasing_test.theil_index())
 
 print(("\n#### Plain model - without debiasing - own metrics"))
-metrics = Baseline.get_metrics(dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)  # None since binary labels
+metrics = Baseline.get_metrics(
+    dataset_orig_test.labels, dataset_nodebiasing_test.labels, threshold=None)  # None since binary labels
 print(f"F1: {metrics['f1'].round(2)}")
 print(f"SP: {metrics['SP'].round(2)}")
 print(f"EO/TPR: {metrics['EO'].round(2)}")
 print(f"FPR: {metrics['FPR'].round(2)}")
 
+# Calculate new TPR and FPR for each group
+metrics_new = {"f1": [], "SP": [], "EO": [], "FPR": []}
+for c, group in enumerate((11, 12, 21, 22)):
+    idx = aif_test_deepcopy["intersection"] == group
+    y_pred = dataset_nodebiasing_test.labels[idx]
+
+    # Calculate metrics for subset
+    metrics = Baseline.get_metrics(
+        dataset_orig_test.labels[idx], y_pred, threshold=0.5)
+    metrics_new["f1"].append(metrics["f1"])  # Fidelity metric
+    metrics_new["SP"].append(metrics["SP"])  # Statistical parity
+    # Equalised opportunity, same as TPR
+    metrics_new["EO"].append(metrics["EO"])
+    metrics_new["FPR"].append(metrics["FPR"])  # False positive rate
+
+print("\nBefore Adverserial mitigation metrics for each group:")
+print(list(labels_intersection.keys()))
+for key in metrics_new.keys():
+    metrics_new[key] = np.array(metrics_new[key])
+    print(
+        f"{key}: {metrics_new[key].round(2)}; STD: {metrics_new[key].std().round(4)}")
+
 print(("\n#### Model - with debiasing - own metrics"))
-metrics = Baseline.get_metrics(dataset_orig_test.labels, dataset_debiasing_test.labels, threshold=None)  # None since binary labels
+metrics = Baseline.get_metrics(
+    dataset_orig_test.labels, dataset_debiasing_test.labels, threshold=None)  # None since binary labels
 print(f"F1: {metrics['f1'].round(2)}")
 print(f"SP: {metrics['SP'].round(2)}")
 print(f"EO/TPR: {metrics['EO'].round(2)}")
 print(f"FPR: {metrics['FPR'].round(2)}")
-# stop write to file
+
+# Calculate new TPR and FPR for each group
+metrics_new = {"f1": [], "SP": [], "EO": [], "FPR": []}
+for c, group in enumerate((11, 12, 21, 22)):
+    idx = aif_test_deepcopy["intersection"] == group
+    y_pred = dataset_debiasing_test.labels[idx]
+
+    # Calculate metrics for subset
+    metrics = Baseline.get_metrics(dataset_orig_test.labels[idx], y_pred, threshold=0.5)
+    metrics_new["f1"].append(metrics["f1"])  # Fidelity metric
+    metrics_new["SP"].append(metrics["SP"])  # Statistical parity
+    # Equalised opportunity, same as TPR
+    metrics_new["EO"].append(metrics["EO"])
+    metrics_new["FPR"].append(metrics["FPR"])  # False positive rate
+
+print("\nAfter Adverserial mitigation metrics for each group:")
+print(list(labels_intersection.keys()))
+for key in metrics_new.keys():
+    metrics_new[key] = np.array(metrics_new[key])
+    print(
+        f"{key}: {metrics_new[key].round(2)}; STD: {metrics_new[key].std().round(4)}")
+
+    # stop write to file
 sys.stdout = orig_stdout
 f.close()

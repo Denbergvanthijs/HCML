@@ -1,35 +1,49 @@
 #### Plain model - without debiasing - dataset metrics
-Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.031361
-Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.013026
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.030009
+Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.014835
 
 #### Model - with debiasing - dataset metrics
-Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.028804
-Test set: Difference in mean outcomes between unprivileged and privileged groups = -0.009867
+Train set: Difference in mean outcomes between unprivileged and privileged groups = -0.013319
+Test set: Difference in mean outcomes between unprivileged and privileged groups = 0.004542
 
 #### Plain model - without debiasing - classification metrics
-Test set: Classification accuracy = 0.813906
-Test set: Balanced classification accuracy = 0.639407
-Test set: Disparate impact = 0.985426
-Test set: Equal opportunity difference = -0.005818
-Test set: Average odds difference = -0.008567
-Test set: Theil_index = 0.081718
+Test set: Classification accuracy = 0.814581
+Test set: Balanced classification accuracy = 0.646507
+Test set: Disparate impact = 0.983276
+Test set: Equal opportunity difference = -0.007217
+Test set: Average odds difference = -0.010205
+Test set: Theil_index = 0.084582
 
 #### Model - with debiasing - classification metrics
-Test set: Classification accuracy = 0.814131
-Test set: Balanced classification accuracy = 0.641774
-Test set: Disparate impact = 0.988914
-Test set: Equal opportunity difference = -0.005881
-Test set: Average odds difference = -0.001167
-Test set: Theil_index = 0.082673
+Test set: Classification accuracy = 0.811881
+Test set: Balanced classification accuracy = 0.632555
+Test set: Disparate impact = 1.005095
+Test set: Equal opportunity difference = 0.001038
+Test set: Average odds difference = 0.021691
+Test set: Theil_index = 0.080887
 
 #### Plain model - without debiasing - own metrics
 F1: 0.89
-SP: 0.89
+SP: 0.88
 EO/TPR: 0.95
-FPR: 0.67
+FPR: 0.65
+
+Before Adverserial mitigation metrics for each group:
+[11, 12, 21, 22]
+f1: [0.87 0.89 0.88 0.9 ]; STD: 0.0111
+SP: [0.88 0.87 0.88 0.89]; STD: 0.0084
+EO: [0.94 0.94 0.95 0.95]; STD: 0.0036
+FPR: [0.68 0.61 0.66 0.65]; STD: 0.025
 
 #### Model - with debiasing - own metrics
 F1: 0.89
 SP: 0.89
 EO/TPR: 0.95
-FPR: 0.66
+FPR: 0.69
+
+After Adverserial mitigation metrics for each group:
+[11, 12, 21, 22]
+f1: [0.87 0.89 0.88 0.9 ]; STD: 0.0112
+SP: [0.9  0.89 0.89 0.9 ]; STD: 0.0056
+EO: [0.95 0.95 0.95 0.95]; STD: 0.0014
+FPR: [0.74 0.69 0.67 0.67]; STD: 0.0286
